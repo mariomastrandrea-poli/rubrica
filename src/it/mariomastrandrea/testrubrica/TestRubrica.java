@@ -8,11 +8,12 @@ import it.mariomastrandrea.testrubrica.repository.RubricaRepository;
 
 public class TestRubrica {
 	static final String applicationName = "Rubrica";
-	static final String repositoryFilename = "informazioni.txt";
+	static final String contactsFilename = "informazioni.txt";
+	static final String usersFilename = "credentials.txt";
 	
 	public static void main(String[] args) {		
 		// create dependencies
-		RubricaRepository repository = new RubricaFileRepository(repositoryFilename);
+		RubricaRepository repository = new RubricaFileRepository(contactsFilename, usersFilename);
 		
 		// create and initialize app manager 
 		RubricaManager manager = new RubricaManager(applicationName, repository);
@@ -25,7 +26,7 @@ public class TestRubrica {
 		
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	manager.showContactsWindow();
+            	manager.showLoginWindow();
             }
         });
     }

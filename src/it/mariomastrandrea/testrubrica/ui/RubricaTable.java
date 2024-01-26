@@ -1,19 +1,25 @@
 package it.mariomastrandrea.testrubrica.ui;
 
+import java.awt.Font;
 import java.util.List;
 
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 import it.mariomastrandrea.testrubrica.models.Persona;
 import it.mariomastrandrea.testrubrica.repository.RubricaRepository;
 
 public class RubricaTable {
 	static String[] columnNames = { "Nome", "Cognome", "Telefono" };
-	private RubricaRepository repository;
+	static final float fontSize = 15.0f;
+	static final float headerFontSize = Float.valueOf(fontSize * 1.08f);
+	static final float rowHeightMultiplier = 1.45f;
 	
+	private RubricaRepository repository;
 	private DefaultTableModel tableModel;
 	private List<Persona> showedContacts;
 	private Persona selectedContact;
@@ -33,9 +39,23 @@ public class RubricaTable {
 	public JTable create() {
 		String[][] rawContacts = this.getRowContactsFromRepository();
 
+		// create non editable table and insert data
 		NonEditableTableModel nonEditableDataModel = new NonEditableTableModel(rawContacts, columnNames);
-	    JTable table = new JTable(nonEditableDataModel);
+		JTable table = new JTable(nonEditableDataModel);
+		
+		// disable multiple selection
+		table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	    
+	    // set table font size and height
+	    Font sizedFont = table.getFont().deriveFont(fontSize);
+	    table.setFont(sizedFont);
+	    table.setRowHeight((int)(table.getRowHeight() * rowHeightMultiplier));
+	    
+	    // set header font size and height
+	    JTableHeader header = table.getTableHeader();
+	    header.setFont(header.getFont().deriveFont(headerFontSize));
+	    
+	    // save table model
 	    this.tableModel = nonEditableDataModel;
 	    
 	    // add a listener for each selection
@@ -51,7 +71,7 @@ public class RubricaTable {
 	                	selectedRow = newSelectedRow;
 	                }
 	                else if (newSelectedRow != selectedRow){
-	                	// update selection
+	                	// update selected Contact
 	                	selectedContact = showedContacts.get(newSelectedRow).clone();
 	                	selectedRow = newSelectedRow;
 	                }

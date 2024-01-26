@@ -2,8 +2,6 @@ informazioni.txt----------------------------------------------------------------
 Steve;Jobs;via Cupertino 13;0612344;56
 Bill;Gates;via Redmond 10;06688989;60
 Babbo;Natale;via del Polo Nord;00000111;99
-Rodolfo;Piluto;Via obbrobbio 2;3456789;44
-e3e3;BBBBBBBB;vaii cosu;5555555;1
-dfdsffv;dddddddd;;111111111;33
-Mario;Micu;;765432;3344
+Antonio;Rovazzi;Via Pozio Pilato 2;5555555;12
+Mario;Elleno;;765432;45
 -------------------------------------------------------------------

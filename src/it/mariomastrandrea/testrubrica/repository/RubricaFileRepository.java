@@ -11,18 +11,26 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import it.mariomastrandrea.testrubrica.models.Persona;
+import it.mariomastrandrea.testrubrica.models.User;
 
 public class RubricaFileRepository implements RubricaRepository {
 	private static int nextContactId = 0;
-	private static String contactsSeparatorRegex = ";";
-	private static int numOfFields = 5;
-	private String filename;
+	private static int nextUserId = 0;
+	private static String fieldsSeparatorRegex = ";";
+	private static int numOfContactFields = 5;
+	private static int numOfUserFields = 2;
+	
+	private String contactsFilename;
+	private String usersFilename;
 	private List<Persona> contacts;
+	private List<User> users;
 	
 	
-	public RubricaFileRepository(String filename) {
-		this.filename = filename;
+	public RubricaFileRepository(String contactsFilename, String usersFilename) {
+		this.contactsFilename = contactsFilename;
+		this.usersFilename = usersFilename;
 		this.contacts = new ArrayList<Persona>();
+		this.users = new ArrayList<User>();
 	}
 
 	@Override
@@ -31,15 +39,15 @@ public class RubricaFileRepository implements RubricaRepository {
 		
 		// read content of the file
 		try {
-			File rubricaFile = new File(this.filename);
+			File rubricaFile = new File(this.contactsFilename);
 			Scanner scanner = new Scanner(rubricaFile);
 			
 			while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                String[] lineTokens = line.split(contactsSeparatorRegex);
+                String[] lineTokens = line.split(fieldsSeparatorRegex);
                 
                 // check if it is a valid contact line
-                if (lineTokens.length != numOfFields) {
+                if (lineTokens.length != numOfContactFields) {
                 	continue;
                 }
                 
@@ -67,7 +75,7 @@ public class RubricaFileRepository implements RubricaRepository {
 		} 
 		catch (FileNotFoundException fnfe) {
 			// if file is not found, it means the Rubrica is empty
-			System.err.println(String.format("Rubrica file %s was not found", this.filename));
+			System.err.println(String.format("Rubrica file %s was not found", this.contactsFilename));
 			fnfe.printStackTrace();
 			return true;
 		}
@@ -110,7 +118,7 @@ public class RubricaFileRepository implements RubricaRepository {
 				.collect(Collectors.toCollection(ArrayList::new));
 		
 		// write to file
-		this.updateFile(this.contacts);
+		this.updateContactsFile(this.contacts);
 	}
 	
 	@Override
@@ -121,7 +129,7 @@ public class RubricaFileRepository implements RubricaRepository {
 		this.contacts.add(contact);
 		
 		// write to file
-		this.updateFile(this.contacts);
+		this.updateContactsFile(this.contacts);
 	}
 	
 	@Override
@@ -132,16 +140,16 @@ public class RubricaFileRepository implements RubricaRepository {
 				.collect(Collectors.toCollection(ArrayList::new));
 		
 		// write to file
-		this.updateFile(this.contacts);
+		this.updateContactsFile(this.contacts);
 	}
 	
-	private void updateFile(List<Persona> contacts) {
+	private void updateContactsFile(List<Persona> contacts) {
 		try {
-            FileOutputStream file = new FileOutputStream(this.filename);
+            FileOutputStream file = new FileOutputStream(this.contactsFilename);
             PrintStream stream = new PrintStream(file);
 
             // header
-            stream.printf("%s-------------------------------------------------------------------\n", this.filename);
+            stream.printf("%s-------------------------------------------------------------------\n", this.contactsFilename);
             
             for (Persona p : contacts) {
             	stream.printf(
@@ -160,5 +168,63 @@ public class RubricaFileRepository implements RubricaRepository {
 			System.err.println("An unexpected error occurred saving the new contacts");
             ioe.printStackTrace();
         }
+	}
+	
+	public boolean initAndLoadUsers() {
+		this.users.clear();
+		
+		// read content of the file
+		try {
+			File usersFile = new File(this.usersFilename);
+			Scanner scanner = new Scanner(usersFile);
+			
+			while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] lineTokens = line.split(fieldsSeparatorRegex);
+                
+                // check if it is a valid user line
+                if (lineTokens.length != numOfUserFields) {
+                	continue;
+                }
+                
+                String username = lineTokens[0];
+                String passwordHash = lineTokens[1];
+                
+                // create and save a new user
+                User user = new User(nextUserId, username, passwordHash);
+                this.users.add(user);  
+                nextUserId += 1;
+            }
+			
+			scanner.close();
+		} 
+		catch (FileNotFoundException fnfe) {
+			// users file is mandatory
+			System.err.println(String.format("Users file %s was not found", this.usersFilename));
+			fnfe.printStackTrace();
+			return false;
+		}
+		catch (Exception e) {
+			System.err.println("An unexpected error occurred in RubricaFileRepository init");
+			e.printStackTrace();
+			return false;
+		}
+		
+		// users successfully loaded
+		return true;
+	}
+	
+	public User checkUserLogin(User user) {
+		for (User u: this.users) {
+			if (u.getUsername().equals(user.getUsername())) {
+				if (u.getPasswordhash().equals(user.getPasswordhash())) {
+					return u.clone();
+				}
+				else {
+					return null;
+				}
+			}
+		}
+		return null;
 	}
 }

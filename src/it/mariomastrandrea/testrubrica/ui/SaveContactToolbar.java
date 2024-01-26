@@ -4,20 +4,22 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import it.mariomastrandrea.testrubrica.models.Persona;
-import it.mariomastrandrea.testrubrica.models.PersonaOrError;
 
-public class SaveContactPanel {
+public class SaveContactToolbar {
 	public enum Action {
 		save, edit
 	}
 	
 	private static final String saveContactLabel = "Salva";
-	private static final String cancelLabel = "Annulla";
+	private static final String cancelLabel = "Annulla"; 
+	
+	private static final String saveContactIconPath = "icons/save_icon.png";
+	private static final String cancelIconPath = "icons/cancel_icon.png";
 	
 	private Window window;
 	private RubricaTable rubricaTable;
@@ -25,7 +27,8 @@ public class SaveContactPanel {
 	private Action action;
 	private Persona showedContact;
 	
-	public SaveContactPanel(Window window, RubricaTable rubricaTable, 
+	
+	public SaveContactToolbar(Window window, RubricaTable rubricaTable, 
 			ContactForm form, Action action, Persona showedContact) {
 		this.window = window;
 		this.rubricaTable = rubricaTable;
@@ -34,20 +37,26 @@ public class SaveContactPanel {
 		this.showedContact = showedContact;
 	}
 	
-	public JPanel create() {
-		JPanel buttonsPanel = new JPanel();
+	public JToolBar create() {
+		JToolBar buttonsToolbar = new JToolBar();
 		
-		JButton saveContactButton = new JButton(saveContactLabel);
-		JButton cancelButton = new JButton(cancelLabel);
+		// create buttons 
+		
+		ImageIcon saveContactIcon = new ImageIcon(saveContactIconPath);
+		ImageIcon cancelIcon = new ImageIcon(cancelIconPath);
+		
+		JButton saveContactButton = new JButton(saveContactLabel, saveContactIcon);
+		JButton cancelButton = new JButton(cancelLabel, cancelIcon);
+		
+		// add on click listeners
 		
 		saveContactButton.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
-		    	PersonaOrError personaOrError = form.getPersonDetailsToSave();
+		    	Persona contactToSave = form.getPersonDetailsToSave();
 		    	
-		    	if (personaOrError.getErrorMessage() != null) {
+		    	if (contactToSave == null) {
 		    		// input error
-		    		JOptionPane.showMessageDialog(null, personaOrError.getErrorMessage());
 		    		return;
 		    	}
 		    	
@@ -55,15 +64,13 @@ public class SaveContactPanel {
 		    	
 		    	switch (action) {
 			    	case save:
-			    		rubricaTable.createNewContact(personaOrError.getContact());
+			    		rubricaTable.createNewContact(contactToSave);
 			    		break;
 			    		
 			    	case edit:
-			    		if (!personaOrError.getContact().isIdenticalTo(showedContact)) {
-			    			System.out.println("In");
-			    			
+			    		if (!contactToSave.isIdenticalTo(showedContact)) {			    			
 			    			// edit just if the new details are not identical to the old ones
-			    			rubricaTable.editContact(personaOrError.getContact());
+			    			rubricaTable.editContact(contactToSave);
 			    		}
 			    		break;
 		    	}
@@ -80,9 +87,11 @@ public class SaveContactPanel {
 		    }
 		});
 		
-		buttonsPanel.add(saveContactButton);
-		buttonsPanel.add(cancelButton);
+		// add buttons to the toolBar
 		
-		return buttonsPanel;
+		buttonsToolbar.add(saveContactButton);
+		buttonsToolbar.add(cancelButton);
+		
+		return buttonsToolbar;
 	}
 }

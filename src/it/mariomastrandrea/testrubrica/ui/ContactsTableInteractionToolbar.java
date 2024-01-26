@@ -3,16 +3,22 @@ package it.mariomastrandrea.testrubrica.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import it.mariomastrandrea.testrubrica.models.Persona;
 
-public class ContactsTableInteractionPanel {
+public class ContactsTableInteractionToolbar {	
 	private static final String newContactLabel = "Nuovo";
 	private static final String editContactLabel = "Modifica";
 	private static final String deleteContactLabel = "Elimina";
+	
+	private static final String addContactIconPath = "icons/add_icon.png";
+	private static final String editContactIconPath = "icons/edit_icon.png";
+	private static final String deleteContactIconPath = "icons/delete_icon.png";
+
 
 	private static final String editContactError = "Seleziona prima un contatto per effettuare una modifica!";
 	private static final String deleteContactError = "Seleziona prima un contatto per eliminarlo!";
@@ -21,18 +27,26 @@ public class ContactsTableInteractionPanel {
 	private RubricaTable rubricaTable;
 	private ContactsNavigator navigator;
 	
-	public ContactsTableInteractionPanel(RubricaTable rubricaTable, ContactsNavigator navigator) {
+	public ContactsTableInteractionToolbar(RubricaTable rubricaTable, ContactsNavigator navigator) {
 		this.rubricaTable = rubricaTable;
 		this.navigator = navigator;
 	}
 	
-	public JPanel create() {
-		JPanel buttonsPanel = new JPanel();
+	public JToolBar create() {
+		JToolBar buttonsToolbar = new JToolBar();
 		
-		JButton newContactButton = new JButton(newContactLabel);
-		JButton editContactButton = new JButton(editContactLabel);
-		JButton deleteContactButton = new JButton(deleteContactLabel);
-	
+		// create action buttons
+		
+        ImageIcon addContactIcon = new ImageIcon(addContactIconPath); 
+        ImageIcon editContactIcon = new ImageIcon(editContactIconPath); 
+        ImageIcon deleteContactIcon = new ImageIcon(deleteContactIconPath); 
+
+		JButton newContactButton = new JButton(newContactLabel, addContactIcon);
+		JButton editContactButton = new JButton(editContactLabel, editContactIcon);
+		JButton deleteContactButton = new JButton(deleteContactLabel, deleteContactIcon);
+
+		// add click listeners
+		
 		newContactButton.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
@@ -81,10 +95,11 @@ public class ContactsTableInteractionPanel {
 		    }
 		});
 
-		buttonsPanel.add(newContactButton);
-		buttonsPanel.add(editContactButton);
-		buttonsPanel.add(deleteContactButton);
-		
-		return buttonsPanel;
+		// add buttons to the toolBar
+		buttonsToolbar.add(newContactButton);
+		buttonsToolbar.add(editContactButton);
+		buttonsToolbar.add(deleteContactButton);
+				
+		return buttonsToolbar;
 	}
 }

@@ -1,70 +1,115 @@
 package it.mariomastrandrea.testrubrica.ui;
 
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import it.mariomastrandrea.testrubrica.models.Persona;
-import it.mariomastrandrea.testrubrica.models.PersonaOrError;
 
 public class ContactForm {
-	private Persona contact;
-	
 	private static final String nameLabel = "Nome";
 	private static final String surnameLabel = "Cognome";
 	private static final String addressLabel = "Indirizzo";
 	private static final String telephoneNumberLabel = "Telefono";
 	private static final String ageLabel = "Età";
 	
+	private static final int rowHeight = 10;
+	private static final int columnWidth = 20;
+	private static final int formLateralPadding = 30;
+	private static final int formVerticalPadding = 5;
+	
+	private Persona contact;
+
 	private JTextField nameTextField;
 	private JTextField surnameTextField;
 	private JTextField addressTextField;
 	private JTextField telephoneNumberTextField;
 	private JTextField ageTextField;
 
-
-
 	public ContactForm(Persona contact) {
 		this.contact = contact;
 	}
 	
 	public JPanel create() {
-		JPanel panel = new JPanel(new GridLayout(0, 2)); 
+		GridBagLayout gridLayout = new GridBagLayout();
+		JPanel panel = new JPanel(gridLayout); 
+		
+		// set grid layout UI
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL; 
+		constraints.ipady = rowHeight;
+		constraints.ipadx = columnWidth;
+		constraints.insets = new Insets(formVerticalPadding, formLateralPadding, formVerticalPadding, formLateralPadding);
 		
 		// name
-		panel.add(new JLabel(nameLabel));
+		
+		constraints.gridy = 0;
+		constraints.gridx = 0;
+		panel.add(new JLabel(nameLabel), constraints);
+		
 		this.nameTextField = new JTextField(contact == null ? "" : contact.getName());
-		panel.add(this.nameTextField);
+		constraints.gridx = 1;
+		constraints.weightx = 1;
+		panel.add(this.nameTextField, constraints);
 		
 		// surname
-		panel.add(new JLabel(surnameLabel));
+		
+		constraints.gridy = 1;
+		constraints.gridx = 0;	
+		constraints.weightx = 0;
+		panel.add(new JLabel(surnameLabel), constraints);
+		
 		this.surnameTextField = new JTextField(contact == null ? "" : contact.getSurname());
-		panel.add(this.surnameTextField);
+		constraints.gridx = 1;
+		constraints.weightx = 1;
+		panel.add(this.surnameTextField, constraints);
 		
 		// address
-		panel.add(new JLabel(addressLabel));
+		
+		constraints.gridy = 2;
+		constraints.gridx = 0;
+		constraints.weightx = 0;
+		panel.add(new JLabel(addressLabel), constraints);
+		
 		this.addressTextField = new JTextField(contact == null ? "" : contact.getAddress());
-		panel.add(this.addressTextField);
+		constraints.gridx = 1;
+		constraints.weightx = 1;
+		panel.add(this.addressTextField, constraints);
 		
 		// telephone number
-		panel.add(new JLabel(telephoneNumberLabel));
+		constraints.gridy = 3;
+		constraints.gridx = 0;	
+		constraints.weightx = 0;
+		panel.add(new JLabel(telephoneNumberLabel), constraints);
+		
 		this.telephoneNumberTextField = new JTextField(contact == null ? "" : contact.getTelephoneNumber());
-		panel.add(this.telephoneNumberTextField);
+		constraints.gridx = 1;
+		constraints.weightx = 1;
+		panel.add(this.telephoneNumberTextField, constraints);
 		
 		// age
-		panel.add(new JLabel(ageLabel));
+		constraints.gridy = 4;
+		constraints.gridx = 0;	
+		constraints.weightx = 0;
+		panel.add(new JLabel(ageLabel), constraints);
+		
 		String ageString = contact == null ? "" : contact.getAge() == null ? "" : Integer.toString(contact.getAge());
 		this.ageTextField = new JTextField(ageString);
-		panel.add(this.ageTextField);	
-		
+		constraints.gridx = 1;
+		constraints.weightx = 1;
+		panel.add(this.ageTextField, constraints);		
+				
 		return panel;
 	}
 	
-	public PersonaOrError getPersonDetailsToSave() {
+	public Persona getPersonDetailsToSave() {
 		String name = this.nameTextField.getText();
 		String surname = this.surnameTextField.getText();
 		String address = this.addressTextField.getText();
@@ -99,7 +144,8 @@ public class ContactForm {
 		
 		if (errors.size() > 0) {
 			// some error occurred
-			return new PersonaOrError(null, String.join("\n", errors));
+    		JOptionPane.showMessageDialog(null, String.join("\n", errors));
+    		return null;
 		}
 		else {
 			Persona newContact = new Persona(
@@ -111,7 +157,7 @@ public class ContactForm {
 				age
 			);
 						
-			return new PersonaOrError(newContact, null);
+			return newContact;
 		}
 	}
 }

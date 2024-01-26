@@ -4,27 +4,31 @@ import java.awt.BorderLayout;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import it.mariomastrandrea.testrubrica.models.Persona;
+import it.mariomastrandrea.testrubrica.models.User;
 import it.mariomastrandrea.testrubrica.repository.RubricaRepository;
 import it.mariomastrandrea.testrubrica.ui.ContactForm;
 import it.mariomastrandrea.testrubrica.ui.ContactsNavigator;
-import it.mariomastrandrea.testrubrica.ui.ContactsTableInteractionPanel;
+import it.mariomastrandrea.testrubrica.ui.ContactsTableInteractionToolbar;
+import it.mariomastrandrea.testrubrica.ui.LoginForm;
+import it.mariomastrandrea.testrubrica.ui.LoginNavigator;
+import it.mariomastrandrea.testrubrica.ui.LoginToolbar;
 import it.mariomastrandrea.testrubrica.ui.RubricaTable;
-import it.mariomastrandrea.testrubrica.ui.SaveContactPanel;
-import it.mariomastrandrea.testrubrica.ui.SaveContactPanel.Action;
+import it.mariomastrandrea.testrubrica.ui.SaveContactToolbar;
+import it.mariomastrandrea.testrubrica.ui.SaveContactToolbar.Action;
 
-public class RubricaManager implements ContactsNavigator {
+public class RubricaManager implements ContactsNavigator, LoginNavigator {
+	private static final String newContactWindowLabel = "Aggiungi nuovo contatto";
+	private static final String editContactWindowLabel = "Modifica contatto";
+	
 	private String appName;
 	private RubricaRepository repository;
 	private RubricaTable rubricaTable;
-	private JFrame mainFrame;
+	private JFrame currentFrame;
+	private User user;
 	
-	private static final String newContactWindowLabel = "Aggiungi nuovo contatto";
-	private static final String editContactWindowLabel = "Modifica contatto";
-
 	
 	public RubricaManager(String appName, RubricaRepository repository) {
 		this.appName = appName;
@@ -32,48 +36,72 @@ public class RubricaManager implements ContactsNavigator {
 	}
 	
 	public boolean init() {
-		boolean repositorySuccessfullyInitialized = this.repository.initAndLoadContacts();
+		boolean repositoryContactsSuccessfullyInitialized = this.repository.initAndLoadContacts();
+		boolean repositoryUsersSuccessfullyInitialized = this.repository.initAndLoadUsers();
 				
-		return repositorySuccessfullyInitialized;
+		return repositoryContactsSuccessfullyInitialized && repositoryUsersSuccessfullyInitialized;
 	}
 	
-	public void showContactsWindow() {    	
-        JFrame frame = new JFrame(this.appName);
-        this.mainFrame = frame;
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public void showLoginWindow() {
+		JFrame loginFrame = new JFrame(String.format("%s - Login", this.appName));
+		loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.currentFrame = loginFrame;
+		
+		// add login form
+		LoginForm form = new LoginForm(this.repository);
+		loginFrame.add(form.create());
+		
+		// add login toolBar
+		LoginToolbar toolbar = new LoginToolbar(form, this);
+		loginFrame.add(toolbar.create(), BorderLayout.SOUTH);
+		
+		loginFrame.pack();
+		loginFrame.setVisible(true);
+	}
+	
+	@Override
+	public void navigateToContactsTable(User user) {
+		this.user = user;
+		
+		JFrame oldFrame = this.currentFrame;
+		JFrame contactFrame = new JFrame(this.appName);
+        this.currentFrame = contactFrame;
+        contactFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        // create contacts table
+        // create and add contacts table
         RubricaTable rubricaTable = new RubricaTable(this.repository);
         this.rubricaTable = rubricaTable;
-        JScrollPane scrollPane = new JScrollPane(rubricaTable.create());
         
-        // create buttons
-        ContactsTableInteractionPanel interactionButtonsPanel = 
-        		new ContactsTableInteractionPanel(rubricaTable, this);
+        contactFrame.add(new JScrollPane(rubricaTable.create()));
         
-        JPanel buttonsPanel = interactionButtonsPanel.create();
-        
-        // add components
-        frame.add(scrollPane);
-        frame.add(buttonsPanel, BorderLayout.SOUTH);
+        // create and add buttons toolBar
+        ContactsTableInteractionToolbar interactionButtonsToolbar = 
+        		new ContactsTableInteractionToolbar(rubricaTable, this);
+                
+        contactFrame.add(interactionButtonsToolbar.create(), BorderLayout.SOUTH);
         
         // resize and show
-        frame.pack();
-        frame.setVisible(true);
-    }
+        contactFrame.pack();
+        contactFrame.setVisible(true);
+        
+        // close old window
+        oldFrame.dispose();
+		
+		return;
+	}
 	
 	@Override
 	public void navigateToEditContact(Persona contact) {
 		// create the new window in overlay
 		String windowLabel = contact == null ? newContactWindowLabel : editContactWindowLabel;
-		JDialog secondaryWindow = new JDialog(this.mainFrame, windowLabel);
+		JDialog secondaryWindow = new JDialog(this.currentFrame, windowLabel);
         
         // add form
 		ContactForm contactForm = new ContactForm(contact);
-		secondaryWindow.add(contactForm.create());
+		secondaryWindow.add(contactForm.create(), BorderLayout.NORTH);
 		
 		// add form buttons
-		SaveContactPanel editContactButtons = new SaveContactPanel(
+		SaveContactToolbar editContactButtons = new SaveContactToolbar(
 			secondaryWindow,
 			this.rubricaTable,
 			contactForm,
@@ -86,8 +114,8 @@ public class RubricaManager implements ContactsNavigator {
 		secondaryWindow.pack();
         
         // put it on top
-		secondaryWindow.setSize(this.mainFrame.getSize());
-		secondaryWindow.setLocation(this.mainFrame.getLocation());
+		secondaryWindow.setSize(this.currentFrame.getSize());
+		secondaryWindow.setLocation(this.currentFrame.getLocation());
 
         // show the new window
 		secondaryWindow.setVisible(true);
