@@ -24,6 +24,8 @@ public class RubricaFileRepository implements RubricaRepository {
 	private String usersFilename;
 	private List<Persona> contacts;
 	private List<User> users;
+	@SuppressWarnings("unused")
+	private User currentUser;
 	
 	
 	public RubricaFileRepository(String contactsFilename, String usersFilename) {
@@ -32,9 +34,21 @@ public class RubricaFileRepository implements RubricaRepository {
 		this.contacts = new ArrayList<Persona>();
 		this.users = new ArrayList<User>();
 	}
-
+	
 	@Override
-	public boolean initAndLoadContacts() {
+	public boolean init() {
+		// there is no initialization in this repository
+		return true;
+	}
+	
+	public void setCurrentUser(User user) {
+		this.currentUser = user;
+	}
+	
+	/**
+	 * Load user's contacts in memory
+	 */
+	private boolean initAndLoadContacts() {
 		contacts.clear();
 		
 		// read content of the file
@@ -65,6 +79,9 @@ public class RubricaFileRepository implements RubricaRepository {
                 	continue;
                 }
                 
+                // * Here they should be loaded only the current user's contacts, 
+                // but I simplify this Repository retrieving all the contacts *
+                
                 // create and save a new contact
                 Persona contact = new Persona(nextContactId, name, surname, address, telephoneNumber, age);
                 this.contacts.add(contact);  
@@ -91,27 +108,20 @@ public class RubricaFileRepository implements RubricaRepository {
 	
 	@Override
 	public List<Persona> getContacts() {
+		if (this.contacts.isEmpty()) {
+			this.initAndLoadContacts();
+		}
+		
 		// clone the list before returning it, to preserve data integrity in the Repository
 		return this.contacts.stream().map(persona -> persona.clone()).toList();
 	}
-	
-	@Override
-	public Persona getContact(int id) {
-		Persona found = null;
-		
-		for (Persona p: this.contacts) {
-			if (p.getId() == id) {
-				found = p;
-				break;
-			}
-		}
-		
-		return found;
-	}
-
 
 	@Override
 	public void deleteContact(Persona contact) {
+		if (this.contacts.isEmpty()) {
+			this.initAndLoadContacts();
+		}
+		
 		// update list
 		this.contacts = this.contacts.stream()
 				.filter(p -> p.getId() != contact.getId())
@@ -123,6 +133,10 @@ public class RubricaFileRepository implements RubricaRepository {
 	
 	@Override
 	public void createNewContact(Persona contact) {
+		if (this.contacts.isEmpty()) {
+			this.initAndLoadContacts();
+		}
+		
 		contact.setId(nextContactId);
 		nextContactId += 1;
 		
@@ -134,6 +148,10 @@ public class RubricaFileRepository implements RubricaRepository {
 	
 	@Override
 	public void editContact(Persona contact) {
+		if (this.contacts.isEmpty()) {
+			this.initAndLoadContacts();
+		}
+		
 		// substitute the new contact
 		this.contacts = this.contacts.stream()
 				.map(p -> p.getId() == contact.getId() ? contact : p)
@@ -170,7 +188,9 @@ public class RubricaFileRepository implements RubricaRepository {
         }
 	}
 	
-	public boolean initAndLoadUsers() {
+	// * Users *
+	
+	private boolean initAndLoadUsers() {
 		this.users.clear();
 		
 		// read content of the file
@@ -215,6 +235,14 @@ public class RubricaFileRepository implements RubricaRepository {
 	}
 	
 	public User checkUserLogin(User user) {
+		if (this.users.isEmpty()) {
+			boolean loadedUsers = this.initAndLoadUsers();
+			if (!loadedUsers) {
+				System.err.println("An error occurred loading app users");
+				return null;
+			}
+		}
+		
 		for (User u: this.users) {
 			if (u.getUsername().equals(user.getUsername())) {
 				if (u.getPasswordhash().equals(user.getPasswordhash())) {

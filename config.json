@@ -1,0 +1,17 @@
+{
+	"mysql": {
+		"username": "rubrica_test_user",
+		"password": "Password.0",
+		"ip_server": "127.0.0.1",
+		"port": "3306",
+		"db_name": "RubricaTuringAssessment"
+	},
+	"app": {
+		"db_repository": false,
+		"file_repository": true,
+		"test_user_credentials": {
+			"username": "admin",
+			"password": "password"
+		}
+	}
+}

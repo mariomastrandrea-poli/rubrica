@@ -6,12 +6,15 @@ import it.mariomastrandrea.testrubrica.models.Persona;
 import it.mariomastrandrea.testrubrica.models.User;
 
 public interface RubricaRepository {
-	public boolean initAndLoadContacts();
+	public boolean init();
+	public void setCurrentUser(User user);
+
+	// contacts
 	public List<Persona> getContacts();
-	public void deleteContact(Persona contact);
-	public Persona getContact(int id);
 	public void createNewContact(Persona contact);
 	public void editContact(Persona contact);
-	public boolean initAndLoadUsers();
+	public void deleteContact(Persona contact);
+	
+	// users
 	public User checkUserLogin(User user);
 }

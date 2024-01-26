@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
 import it.mariomastrandrea.testrubrica.models.Persona;
@@ -27,6 +28,7 @@ public class RubricaManager implements ContactsNavigator, LoginNavigator {
 	private RubricaRepository repository;
 	private RubricaTable rubricaTable;
 	private JFrame currentFrame;
+	@SuppressWarnings("unused")
 	private User user;
 	
 	
@@ -36,10 +38,18 @@ public class RubricaManager implements ContactsNavigator, LoginNavigator {
 	}
 	
 	public boolean init() {
-		boolean repositoryContactsSuccessfullyInitialized = this.repository.initAndLoadContacts();
-		boolean repositoryUsersSuccessfullyInitialized = this.repository.initAndLoadUsers();
-				
-		return repositoryContactsSuccessfullyInitialized && repositoryUsersSuccessfullyInitialized;
+		// inizialize app
+		boolean repositoryInitialized = this.repository.init();
+		
+		boolean appInitialized = repositoryInitialized;
+		
+		if (!appInitialized) {
+			System.err.println("An error occurred during app initialization");
+			JOptionPane.showMessageDialog(null, "An unexpected error occurred");
+			return false;
+		}
+		
+		return appInitialized;
 	}
 	
 	public void showLoginWindow() {
@@ -60,8 +70,9 @@ public class RubricaManager implements ContactsNavigator, LoginNavigator {
 	}
 	
 	@Override
-	public void navigateToContactsTable(User user) {
-		this.user = user;
+	public void navigateToContactsTable(User user) {		
+		this.user = user;		
+		this.repository.setCurrentUser(user);
 		
 		JFrame oldFrame = this.currentFrame;
 		JFrame contactFrame = new JFrame(this.appName);
