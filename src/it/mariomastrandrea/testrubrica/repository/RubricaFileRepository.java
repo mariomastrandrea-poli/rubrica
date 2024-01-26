@@ -113,7 +113,8 @@ public class RubricaFileRepository implements RubricaRepository {
 		}
 		
 		// clone the list before returning it, to preserve data integrity in the Repository
-		return this.contacts.stream().map(persona -> persona.clone()).toList();
+		return this.contacts.stream().map(persona -> persona.clone())
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override

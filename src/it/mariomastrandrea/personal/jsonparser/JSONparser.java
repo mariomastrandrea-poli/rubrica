@@ -135,7 +135,7 @@ public class JSONparser {
 			object.addProperty(key, value);
 			
 			// remove comma separator
-			if(!currentLine.isEmpty() && currentLine.charAt(0) == ',') 
+			if(currentLine.length() > 0 && currentLine.charAt(0) == ',') 
 				currentLine.deleteCharAt(0); 
 			
 			currentLineString = currentLine.toString();
@@ -187,7 +187,7 @@ public class JSONparser {
 			array.add(nextComponent);
 			
 			// remove comma separator
-			if(!currentLine.isEmpty() && currentLine.charAt(0) == ',') 
+			if(currentLine.length() > 0 && currentLine.charAt(0) == ',') 
 				currentLine.deleteCharAt(0); 
 			
 			currentLineString = currentLine.toString();

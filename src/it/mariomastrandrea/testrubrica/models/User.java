@@ -22,7 +22,6 @@ public class User {
 		
 		// compute password hash
 		this.passwordHash = this.computeHashOf(password);
-		System.out.println(this.passwordHash);
 	}
 	
 	public Integer getId() {

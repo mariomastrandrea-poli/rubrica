@@ -15,7 +15,7 @@ public class TestRubrica {
 	static final String applicationName = "Rubrica";
 	static final String contactsFilename = "informazioni.txt";
 	static final String usersFilename = "credentials.txt";
-	static final String configFilename = "config.json";
+	static final String configFilePath = "config.json";
 	
 	
 	public static void main(String[] args) {
@@ -73,7 +73,6 @@ public class TestRubrica {
 	
 	private static JSONobject readConfig() {
 		JSONparser parser = new JSONparser();
-		String configFilePath = String.format("./%s", configFilename);
 		
 		JSONcomponent configObject = parser.parseFile(configFilePath);
 		if (configObject == null) {
