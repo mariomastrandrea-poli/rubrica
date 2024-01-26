@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import it.mariomastrandrea.testrubrica.models.User;
@@ -62,7 +63,7 @@ public class LoginForm {
 		constraints.ipadx = columnWidth;
 		panel.add(new JLabel(passwordLabel), constraints);
 		
-		this.passwordField = new JTextField("");
+		this.passwordField = new JPasswordField("");
 		constraints.gridx = 1;
 		constraints.ipadx = columnWidth * 10;
 		panel.add(this.passwordField, constraints);
