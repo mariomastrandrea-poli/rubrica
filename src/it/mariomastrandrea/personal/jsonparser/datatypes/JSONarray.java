@@ -20,7 +20,7 @@ public class JSONarray extends JSONcomponent {
 	public String print(int indentation) {
 		StringBuilder sb = new StringBuilder();
 		
-		for(var component : this.array) {
+		for(JSONcomponent component : this.array) {
 			String printedComponent = component.print(indentation+1);
 			
 			if(sb.length() > 0)

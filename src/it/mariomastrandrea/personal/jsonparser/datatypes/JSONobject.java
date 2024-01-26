@@ -1,6 +1,7 @@
 package it.mariomastrandrea.personal.jsonparser.datatypes;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -21,7 +22,7 @@ public class JSONobject extends JSONcomponent {
 	public String print(int indentation) {	
 		StringBuilder sb = new StringBuilder();
 		
-		for(var pair : keyValuePairProperties.entrySet()) {
+		for(Map.Entry<String, JSONcomponent> pair : keyValuePairProperties.entrySet()) {
 			
 			String key = pair.getKey();
 			String value = pair.getValue().print(indentation+1);

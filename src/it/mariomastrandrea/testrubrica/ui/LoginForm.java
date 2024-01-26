@@ -76,11 +76,11 @@ public class LoginForm {
 		
 		List<String> errors = new ArrayList<String>();
 		
-		if (username == null || username.isBlank()) {
+		if (username == null || username.trim().isEmpty()) {
 			errors.add(String.format("Il campo %s non puo' essere vuoto", usernameLabel));
 		}
 		
-		if (password == null || password.isBlank()) {
+		if (password == null || password.trim().isEmpty()) {
 			errors.add(String.format("Il campo %s non puo' essere vuoto", passwordLabel));
 		}
 		
@@ -91,7 +91,7 @@ public class LoginForm {
 		}
 		
 		// login check
-		User checkedUser = this.repository.checkUserLogin(new User(username.strip(), password.strip()));
+		User checkedUser = this.repository.checkUserLogin(new User(username.trim(), password.trim()));
 		
 		if (checkedUser == null) {
 			// wrong login

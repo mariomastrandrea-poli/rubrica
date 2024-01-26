@@ -120,22 +120,22 @@ public class ContactForm {
 		
 		// check input
 		
-		if (name.isBlank()) {
+		if (name.trim().isEmpty()) {
 			errors.add(String.format("Errore: il campo %s non può essere vuoto", nameLabel));
 		}
 		
 		Integer age = null;
 				
-		if (!ageString.isBlank()) {
+		if (!ageString.trim().isEmpty()) {
 			try {
-				age = Integer.parseInt(ageString.strip());
+				age = Integer.parseInt(ageString.trim());
 			}
 			catch (NumberFormatException nfe) {
 				errors.add(String.format("Errore: il campo %s è in un formato errato. Inserisci un numero intero", ageLabel));
 			}
 		}
 		
-		if(!telephoneNumber.isBlank()) {
+		if(!telephoneNumber.trim().isEmpty()) {
 			if (!telephoneNumber.matches("^+?[\\d]+$")) {
 				// wrong format
 				errors.add(String.format("Errore: il campo %s è in un formato errato. Inserisci un numero di telefono valido ", telephoneNumberLabel));
@@ -150,10 +150,10 @@ public class ContactForm {
 		else {
 			Persona newContact = new Persona(
 				this.contact == null ? null : this.contact.getId(),
-				name.strip(),
-				surname.strip(),
-				address.strip(),
-				telephoneNumber.strip(),
+				name.trim(),
+				surname.trim(),
+				address.trim(),
+				telephoneNumber.trim(),
 				age
 			);
 						

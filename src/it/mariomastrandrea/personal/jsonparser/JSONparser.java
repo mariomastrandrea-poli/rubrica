@@ -66,7 +66,7 @@ public class JSONparser {
 		}
 		
 		// ignore blank strings
-		while(currentLineString.isBlank()) {
+		while(currentLineString.trim().isEmpty()) {
 			currentLineString = br.readLine();
 			if(currentLineString == null) return null;
 		}
@@ -110,7 +110,7 @@ public class JSONparser {
 		String currentLineString = currentLine.deleteCharAt(0).toString();
 		
 		// remove blank lines
-		while(currentLineString.isBlank()) {
+		while(currentLineString.trim().isEmpty()) {
 			currentLineString = br.readLine();
 			if(currentLineString == null) return null;
 		}
@@ -140,7 +140,7 @@ public class JSONparser {
 			
 			currentLineString = currentLine.toString();
 			
-			while(currentLineString.isBlank()) {
+			while(currentLineString.trim().isEmpty()) {
 				currentLineString = br.readLine();
 				if(currentLineString == null) break;
 			}
@@ -169,7 +169,7 @@ public class JSONparser {
 		String currentLineString = currentLine.deleteCharAt(0).toString();
 				
 		// removing blank lines
-		while(currentLineString.isBlank()) {
+		while(currentLineString.trim().isEmpty()) {
 			currentLineString = br.readLine();
 			if(currentLineString == null) return null;
 		}
@@ -192,7 +192,7 @@ public class JSONparser {
 			
 			currentLineString = currentLine.toString();
 			
-			while(currentLineString.isBlank()) {
+			while(currentLineString.trim().isEmpty()) {
 				currentLineString = br.readLine();
 				if(currentLineString == null) break;
 			}
